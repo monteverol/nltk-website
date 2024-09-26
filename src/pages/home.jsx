@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { TiArrowSortedDown } from "react-icons/ti";
 import { useNavigate } from "react-router-dom";
 import logo_abscbn from '../assets/logo_abs-cbn.png';
@@ -8,7 +8,10 @@ import logo_philstar from '../assets/logo_philstar.png';
 import logo_rappler from '../assets/logo_rappler.png';
 
 const Home = () => {
-    const [page, setPage] = useState(0);
+    const [page, setPage] = useState(() => {
+        const storedPage = localStorage.getItem("page");
+        return storedPage ? parseInt(storedPage, 10) : 0;
+    });
     const [fade, setFade] = useState(true);
     const navigate = useNavigate();
 
@@ -44,6 +47,10 @@ const Home = () => {
         const selectedNews = news[page];
         navigate(`/${selectedNews.class}`, { state: { header: selectedNews.header, class: selectedNews.class, logo: selectedNews.logo }});
     };
+
+    useEffect(() => {
+        localStorage.setItem("page", page);
+    }, [page]);
 
     return (
         <div className={`h-full w-full relative ${news[page].class} transition-opacity duration-500`}>
