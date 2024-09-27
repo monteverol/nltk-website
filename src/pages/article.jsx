@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { BiSolidLike, BiSolidDislike } from "react-icons/bi";
+import { BiSolidLike, BiSolidDislike, BiCommentDetail } from "react-icons/bi";
 import Comment from '../components/comment';
-import comments from '../data/comments';
+import initialComments from '../data/comments';
+import SentimentChart from '../components/sentiment_chart';
 
 const Article = () => {
     const title = "Philippine Senators Demand Investigation into Allegations of Corruption in Government Contracts";
@@ -10,6 +11,8 @@ const Article = () => {
     const date = "September 20, 2023";
 
     const [active, setActive] = useState(null); // Track which button is active (null, 'like', or 'dislike')
+    const [inputValue, setInputValue] = useState(''); // Manage the input value
+    const [comments, setComments] = useState(initialComments); // Manage the comments array
 
     const handleLikeClick = () => {
         setActive(active === 'like' ? null : 'like');
@@ -17,6 +20,21 @@ const Article = () => {
 
     const handleDislikeClick = () => {
         setActive(active === 'dislike' ? null : 'dislike');
+    };
+
+    const handlePost = () => {
+        if (inputValue.trim()) {
+            const newComment = {
+                date: new Date().toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric',
+                }),
+                message: inputValue.trim(),
+            };
+            setComments([newComment, ...comments]);
+            setInputValue(''); // Clear the input field
+        }
     };
 
     return (
@@ -55,10 +73,20 @@ const Article = () => {
                         </div>
                         <p className="text-[#787878] font-bold text-xl">{summary}</p>
                     </div>
+
+                    {/* SENTIMENT CHART */}
+                    <div className="bg-[#FFFFFF] bg-opacity-80 w-full p-8 flex flex-col gap-8 rounded-xl drop-shadow-md">
+                        <h1 className="text-[#5A5A5A] font-bold text-4xl">Sentiment Analysis</h1>
+                        <SentimentChart
+                            bad={33.33}
+                            neutral={33.33}
+                            good={33.33}
+                        />
+                    </div>
                 </div>
                 
                 {/* RIGHT SIDE */}
-                <div className="bg-[#F4F4F4] bg-opacity-80 p-8 w-[40%] flex flex-col gap-8 overflow-y-scroll rounded-2xl drop-shadow-md">
+                <div className="bg-[#F4F4F4] bg-opacity-80 p-8 w-[40%] flex flex-col gap-8 overflow-y-scroll relative rounded-2xl drop-shadow-md">
                     <div className="flex flex-row w-full justify-between items-center">
                         <h1 className="text-[#585858] font-bold text-4xl">Comments</h1>
                         <div className="flex flex-row gap-4">
@@ -78,15 +106,35 @@ const Article = () => {
                             </div>
                         </div>
                     </div>
-                    {
-                        comments.map((comment, key) => (
-                            <Comment 
-                                key={key}
-                                date={comment.date}
-                                message={comment.message}
-                            />
-                        ))
-                    }
+                    <div className="h-full w-full flex flex-col gap-4 overflow-y-scroll">
+                        {
+                            comments.map((comment, key) => (
+                                <Comment 
+                                    key={key}
+                                    date={comment.date}
+                                    message={comment.message}
+                                />
+                            ))
+                        }
+                    </div>
+                    {/* COMMENT */}
+                    <div className="bg-white gap-2 p-2 bottom-8 flex flex-row items-center rounded-xl drop-shadow-md w-full box-border">
+                        <BiCommentDetail color="#A8A8A8" size={40} />
+                        <input 
+                            type="text" 
+                            placeholder="Comment here" 
+                            value={inputValue}
+                            onChange={(e) => setInputValue(e.target.value)}
+                            className="font-bold text-2xl outline-none bg-transparent flex-grow" 
+                        />
+                        <button 
+                            type="button" 
+                            onClick={handlePost}
+                            className="bg-[#8E5A5A] px-4 py-2 font-bold text-white text-xl rounded-xl drop-shadow-md"
+                        >
+                            Post
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
