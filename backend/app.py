@@ -1,6 +1,6 @@
 from flask import Flask, jsonify
 from flask_cors import CORS
-from scrapers import scrape_abs_cbn, scrape_gma, scrape_manila_times
+from scrapers import scrape_abs_cbn, scrape_gma, scrape_manila_times, scrape_philstar, scrape_rappler
 
 app = Flask(__name__)
 
@@ -26,11 +26,14 @@ def get_news_manila_times():
 
 @app.route('/api/philstar', methods=['GET'])
 def get_news_philstar():
+    philstar_news = scrape_philstar()
+    return jsonify(philstar_news)
     pass
 
 @app.route('/api/rappler', methods=['GET'])
 def get_news_rappler():
-    pass
+    rappler_news = scrape_rappler()
+    return jsonify(rappler_news)
 
 if __name__ == "__main__":
     app.run(debug=True)
